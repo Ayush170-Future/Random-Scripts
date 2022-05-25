@@ -1,0 +1,46 @@
+import re
+from urllib import response
+import tweepy
+import configparser
+import config
+import collections
+
+client = tweepy.Client(bearer_token = config.BEARER_TOKEN)
+
+user1 = client.get_user(username = 'Ayush_cg')
+user2 = client.get_user(username = 'elonmusk')
+
+# response = client.get_users_following(id = user2.data.id, max_results = 1000)
+
+# for follower in response.data:
+#     print(follower.name)
+    
+
+level = 0;
+queue = collections.deque(['elonmusk'])
+visited = set()
+flag = False
+people = {'elonmusk': 0}
+
+while queue:
+    rem = queue.popleft()
+    visited.add(rem)
+
+    if rem == 'Ayush_cg':
+        flag = True
+        print(people[rem])
+        break
+
+    # level = level + 1
+    
+    user = client.get_user(username = rem)
+    response = client.get_users_following(id = user.data.id, max_results = 1000)
+
+    for following in response.data:
+        if following.name not in visited:
+            queue.append(following.username)
+            people[following.username] = people[rem] + 1
+
+
+if flag is False:
+    print(-1)
